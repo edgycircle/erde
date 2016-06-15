@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "pathname"
+bin_file = Pathname.new(__FILE__).realpath
+$:.unshift File.expand_path("../../lib", bin_file)
+
+require "erde/cli"
+Erde::CLI.start(*ARGV)
