@@ -1,0 +1,24 @@
+  <%= table_name %> [label=<
+
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2" STYLE="ROUNDED" ROWS="*">
+      <TR>
+        <TD BORDER="1" SIDES="B">
+          <FONT FACE="Helvetica Neue Bold" POINT-SIZE="14"><%= table_name %></FONT>
+        </TD>
+      </TR>
+      <TR>
+        <TD>
+          <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2" CELLPADDING="0">
+          <% for @column in table_schema['columns'] %>
+            <TR>
+<TD ALIGN="LEFT" PORT="<%= @column %>">
+<FONT FACE="Helvetica Neue" POINT-SIZE="12"><%= @column %></FONT>
+</TD>
+            </TR>
+          <% end %>
+          </TABLE>
+        </TD>
+      </TR>
+    </TABLE>
+
+  >];

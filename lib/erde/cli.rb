@@ -2,6 +2,7 @@ require "erde"
 require "pathname"
 require "open3"
 require "sequel"
+require "erb"
 
 class Erde::CLI
   def self.start(*args)
@@ -35,12 +36,15 @@ class Erde::HashTransformer
   end
 
   def to_dot
+    template = File.read(File.expand_path("../template.dot.erb", __FILE__))
+
     schema_string = ""
     schema_string << "digraph tables {"
-    schema_string << "node [shape=Mrecord rankdir=LR];"
+    schema_string << "node [shape=plaintext rankdir=LR];"
 
     @hash.each_pair do |table_name, table_schema|
-      schema_string << "#{table_name} [label=\"{#{table_name}|#{table_schema['columns'].map {|c| "<#{c}>#{c}" }.join("|")}}\"];"
+      renderer = ERB.new(template)
+      schema_string << renderer.result(binding)
 
       table_schema['relations'].each_pair do |column, target|
         schema_string << "#{table_name}:#{column} -> #{target['table']}:#{target['column']};"
