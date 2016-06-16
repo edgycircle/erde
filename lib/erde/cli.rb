@@ -1,6 +1,7 @@
 require "erde"
 require "pathname"
 require "open3"
+require "sequel"
 
 class Erde::CLI
   def self.start(*args)
@@ -11,6 +12,12 @@ class Erde::CLI
       input = file.read
       text_transformer = Erde::TextTransformer.new(input)
       hash_schema = text_transformer.to_hash
+    end
+
+    if command == "database"
+      url = args.shift.strip
+      database_transformer = Erde::DatabaseTransformer.new(url)
+      hash_schema = database_transformer.to_hash
     end
 
     hash_transformer = Erde::HashTransformer.new(hash_schema)
@@ -43,6 +50,35 @@ class Erde::HashTransformer
     schema_string << "}"
 
     schema_string
+  end
+end
+
+class Erde::DatabaseTransformer
+  def initialize(url)
+    @url = url
+  end
+
+  def to_hash
+    generated_hash = {}
+
+    Sequel.connect(@url) do |db|
+      db.tables.each do |table|
+        generated_hash[table] = {}
+        generated_hash[table]['columns'] = []
+        generated_hash[table]['relations'] = {}
+
+        generated_hash[table]['columns'] = db.schema(table).map(&:first)
+
+        db.foreign_key_list(table).each do |foreign_key|
+          generated_hash[table]['relations'][foreign_key[:columns].first] = {
+            'table' => foreign_key[:table],
+            'column' => foreign_key[:key].first
+          }
+        end
+      end
+    end
+
+    generated_hash
   end
 end
 
