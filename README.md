@@ -9,6 +9,10 @@ Make sure you have [Graphviz](http://graphviz.org/) installed and available in y
 bin/erde file docs/schema.txt docs/schema.png
 ~~~
 
+~~~txt
+bin/erde database postgres://user:password@localhost/your_database docs/schema.png
+~~~
+
 ## Text Schema Format
 ~~~txt
 [identities]
